@@ -1,4 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+import pytest
 
 
 def query():
@@ -50,5 +51,4 @@ def test_loci_count():
     count_mb_stmt = results["results"]["bindings"][0]['count']['value']
     assert int(count_mb_stmt) == 700754    
 
-
-    
+   
