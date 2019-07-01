@@ -1,4 +1,5 @@
 #pyldapi-client
+pytest
 xlsxwriter
 SPARQLWrapper
 rdflib
