@@ -1,2 +1,4 @@
-pyldapi-client
+#pyldapi-client
 xlsxwriter
+SPARQLWrapper
+rdflib
