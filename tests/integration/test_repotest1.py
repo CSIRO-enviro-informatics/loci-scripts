@@ -22,6 +22,13 @@ def test_repo():
     assert testresults == testresults
 
 def test_loci_count():
+    """Test integrity of LOCI cache statement counts
+
+    700754 statements for meshblocks
+    
+    TODO: GNAF, Geofabric, rest of ASGS ...
+    TODO: Swap out to production SPARQL endpoint. Currently using http://13.238.155.4:7200/repositories/repo-test-1
+    """
     sparql = SPARQLWrapper("http://13.238.155.4:7200/repositories/repo-test-1")
     sparql.setQuery("""
         PREFIX dct: <http://purl.org/dc/terms/>
