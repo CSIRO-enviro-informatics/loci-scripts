@@ -1,2 +1,6 @@
-pyldapi-client
+#pyldapi-client
+pytest
 xlsxwriter
+SPARQLWrapper
+rdflib
+python-dotenv
