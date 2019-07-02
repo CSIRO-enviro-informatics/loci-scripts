@@ -3,3 +3,4 @@ pytest
 xlsxwriter
 SPARQLWrapper
 rdflib
+python-dotenv

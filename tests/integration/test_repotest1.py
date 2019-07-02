@@ -1,26 +1,9 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import pytest
+import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 
-
-def query():
-    sparql = SPARQLWrapper("http://13.238.155.4:7200/repositories/repo-test-1")
-    sparql.setQuery("""
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        SELECT *
-        WHERE { 
-            ?x ?y ?z
-        }
-        LIMIT 10
-    """)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-
-    print(results)   
-
-def test_repo():
-    query()
-    testresults = ''
-    assert testresults == testresults
 
 def test_loci_count():
     """Test integrity of LOCI cache statement counts
@@ -28,9 +11,23 @@ def test_loci_count():
     700754 statements for meshblocks
     
     TODO: GNAF, Geofabric, rest of ASGS ...
-    TODO: Swap out to production SPARQL endpoint. Currently using http://13.238.155.4:7200/repositories/repo-test-1
     """
-    sparql = SPARQLWrapper("http://13.238.155.4:7200/repositories/repo-test-1")
+    GRAPHDB_USER = os.getenv("GRAPHDB_USER")
+    GRAPHDB_PASSWORD = os.getenv("GRAPHDB_PASSWORD")
+    SPARQL_ENDPOINT =  os.getenv("SPARQL_ENDPOINT")
+    auth = None
+    # set auth only if .env has credentials
+    if(GRAPHDB_USER != None and GRAPHDB_PASSWORD != None):
+        auth = { 
+            "user" : GRAPHDB_USER,
+            "password" : GRAPHDB_PASSWORD   
+        }
+
+    sparql = SPARQLWrapper(SPARQL_ENDPOINT)
+
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
     sparql.setQuery("""
         PREFIX dct: <http://purl.org/dc/terms/>
         PREFIX o: <http://www.w3.org/1999/02/22-rdf-syntax-ns#object>
