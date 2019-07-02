@@ -2,6 +2,10 @@
 
 ### A collection of scripts, snippets, and mini-apps from the LOC-I Project
 
+### .env
+
+Copy the env-template to .env and edit the file to specify which sparql endpoint
+and authentication details if needed
 
 ## Rights & License
 The content of this repository is &copy; 2019 CSIRO Land and Water.  
