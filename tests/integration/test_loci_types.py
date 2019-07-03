@@ -40,7 +40,15 @@ testdata = [
     ],
     [
         "geo:Feature",
-        "570372"
+        "17155045"
+    ],
+    [
+        "hyf:HY_Catchment",
+        "30692"
+    ],
+    [
+        "hyf:HY_HydroFeature",
+        "30692"
     ],
     [
         "<http://linked.data.gov.au/def/geofabric#RiverRegion>",
@@ -52,31 +60,31 @@ testdata = [
     ],
     [
         "<http://linked.data.gov.au/def/asgs#MeshBlock>",
-        "358007"
+        "358009"
     ],
     [
         "geo:Geometry",
-        "418217"
+        "418220"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#DestinationZone>",
-        "358007"
+        "358009"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#NaturalResourceManagementRegion>",
-        "358007"
+        "358009"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#StateSuburb>",
-        "358007"
+        "358009"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#StateOrTerritory>",
-        "8"
+        "9"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#StatisticalAreaLevel1>",
-        "57489"
+        "57490"
     ],
     [
         "<http://linked.data.gov.au/def/asgs#StatisticalAreaLevel2>",
