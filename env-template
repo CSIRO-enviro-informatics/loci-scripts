@@ -5,5 +5,7 @@
 #SPARQL_ENDPOINT=http://13.238.155.4:7200/repositories/repo-test-1
 
 SPARQL_ENDPOINT=http://13.238.155.4:7200/repositories/repo-test-1
-GRAPHDB_USER=ro
-GRAPHDB_PASSWORD=changeme
+
+#uncomment the following if auth needed
+#GRAPHDB_USER=ro
+#GRAPHDB_PASSWORD=changeme
