@@ -34,19 +34,22 @@ def query_sfWithin(locationUri, sparql_endpoint, auth=None):
         prefix dbp: <http://dbpedia.org/property/>
         PREFIX nv: <http://qudt.org/schema/qudt#numericValue>
         PREFIX qu: <http://qudt.org/schema/qudt#unit>
-        SELECT distinct ?mb ?cc
+        PREFIX asgs: <http://linked.data.gov.au/def/asgs#>
+        PREFIX data: <http://linked.data.gov.au/def/datatype/> 
+        PREFIX geox: <http://linked.data.gov.au/def/geox#>
+        PREFIX g: <http://linked.data.gov.au/dataset/gnaf/address/>
+
+        SELECT DISTINCT ?mb ?cc ?mbArea ?ccArea
         WHERE {{
             ?s dct:isPartOf <http://linked.data.gov.au/dataset/mb16cc> ;
             rdf:subject ?mb ;
-            rdf:predicate <http://www.opengis.net/ont/geosparql#sfWithin> ;
+            rdf:predicate geo:sfWithin ;
             rdf:object ?cc .
             OPTIONAL {{
-                ?mb dbp:area [ nv: ?subArea ;
-                            qu: ?subUnit ] .
+                ?mb geox:hasAreaM2 [ data:value ?mbArea ] .
             }}
-            OPTIONAL{{
-                   ?cc dbp:area [ nv: ?objArea ;
-                                    qu: ?objUnit ] .    
+            OPTIONAL {{
+                ?cc geox:hasAreaM2 [ data:value ?ccArea ] .    
             }}
             {filterStmt}
         }}
@@ -62,7 +65,13 @@ def query_sfWithin(locationUri, sparql_endpoint, auth=None):
         #print(json.dumps(res, indent=4, sort_keys=True))
         #print(res['mb']['value'] + "," + res['cc']['value'])
         #encode <from URI, URI matching withins for from URI>
-        withins_list.append((res['mb']['value'], res['cc']['value']))
+        withins_list.append( {
+                    'mb': res['mb']['value'], 
+                    'cc': res['cc']['value'], 
+                    'mbArea': res['mbArea']['value'], 
+                    'ccArea' : res['ccArea']['value']
+                }
+            )
 
     #do something    
     return withins_list
