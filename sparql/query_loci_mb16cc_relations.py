@@ -38,17 +38,20 @@ def query_sfWithin(locationUri, sparql_endpoint, auth=None):
         PREFIX data: <http://linked.data.gov.au/def/datatype/> 
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX g: <http://linked.data.gov.au/dataset/gnaf/address/>
-        SELECT DISTINCT ?mb ?cc ?mbArea ?ccArea
+        SELECT DISTINCT ?mb ?cc ?pred ?mbArea ?ccArea ?mbAreaGraph ?ccAreaGraph
         WHERE {{
             ?s dct:isPartOf <http://linked.data.gov.au/dataset/mb16cc> ;
             rdf:subject ?mb ;
-            rdf:predicate geo:sfWithin ;
+            rdf:predicate ?pred ;
             rdf:object ?cc .
-            ?mb a asgs:MeshBlock
-            OPTIONAL {{
-                ?mb geox:hasAreaM2 [ data:value ?mbArea ] .
+            ?mb a asgs:MeshBlock .
+            ?cc a <http://linked.data.gov.au/def/geofabric#ContractedCatchment>
+            GRAPH ?mbAreaGraph {{
+                OPTIONAL {{
+                    ?mb geox:hasAreaM2 [ data:value ?mbArea ] .
+                }}
             }}
-            GRAPH <http://linked.data.gov.au/dataset/mb16cc> {{
+            GRAPH ?ccAreaGraph {{
                 OPTIONAL {{
                     ?cc geox:hasAreaM2 [ 
                         data:value ?ccArea ;
@@ -71,9 +74,12 @@ def query_sfWithin(locationUri, sparql_endpoint, auth=None):
         #encode <from URI, URI matching withins for from URI>
         withins_list.append( {
                     'mb': res['mb']['value'], 
+                    'pred' : res['pred']['value'], 
                     'cc': res['cc']['value'], 
                     'mbArea': res['mbArea']['value'], 
-                    'ccArea' : res['ccArea']['value']
+                    'ccArea' : res['ccArea']['value'],
+                    'mbAreaGraph': res['mbAreaGraph']['value'], 
+                    'ccAreaGraph' : res['ccAreaGraph']['value']
                 }
             )
 
@@ -114,7 +120,7 @@ if(GRAPHDB_USER != None and GRAPHDB_PASSWORD != None):
 #    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12105140>"
 #]
 test_case_file = "./loci-testdata/test_case_uris.csv"
-outfile = "./loci-testdata/test_case_withins.csv"
+#outfile = "./loci-testdata/test_case_withins.csv"
 loci_cc_list = parse_input_file(test_case_file)
 #print(loci_cc_list)
 
@@ -139,4 +145,4 @@ for (testcase,uristr) in loci_cc_list:
     #print(json.dumps(withins_list, indent=4, sort_keys=True))
 
     
-print(json.dumps(test_case_withins_list, indent=4, sort_keys=True))
+print(json.dumps(test_case_withins_list, indent=4, sort_keys=False))
