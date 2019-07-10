@@ -26,7 +26,7 @@ def query_type(loci_type, sparql_endpoint, auth=None):
     results = sparql.query().convert()
     
     count  = results["results"]["bindings"][0]['count']['value']
-    #print(loci_type + ", " + count)
+    print(loci_type + ", " + count)
     return count
 
 def query_sfWithin_mb_or_cc(locationUri, sparql_endpoint, auth=None):
