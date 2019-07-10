@@ -304,13 +304,13 @@ def query_intersecting_region_mb16cc(ccUri, mbUri,  sparql_endpoint, auth=None):
             )
     return res_list
 
-def query_mb16cc_cc_to_mb(ccUri, sparql_endpoint, auth=None):
+def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None):
     sparql = SPARQLWrapper(sparql_endpoint)
 
     if auth !=  None:
         sparql.setCredentials(user=auth['user'], passwd=auth['password'])
 
-    query = '''
+    old_query = '''
         PREFIX dct: <http://purl.org/dc/terms/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
@@ -331,7 +331,7 @@ def query_mb16cc_cc_to_mb(ccUri, sparql_endpoint, auth=None):
                     qb4st:crs epsg:3577
                 ] .               
                 FILTER (  datatype(?fromArea) = xsd:decimal)
-            }
+            }}
             OPTIONAL {{
                 ?to geox:hasAreaM2 [
                     data:value ?toArea ;
@@ -346,10 +346,50 @@ def query_mb16cc_cc_to_mb(ccUri, sparql_endpoint, auth=None):
                     rdf:object ?to .
             }}
             
-            FILTER (?from = {contractedCatchmentUri})
+            FILTER (?from = {regionUri})
             #FILTER (?g1 = <http://linked.data.gov.au/dataset/mb16cc>)
         }}   
-    '''.format(contractedCatchmentUri=ccUri)
+    '''.format(regionUri=regionUri)
+
+    query = '''
+        PREFIX dct: <http://purl.org/dc/terms/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX geox: <http://linked.data.gov.au/def/geox#>
+        PREFIX data: <http://linked.data.gov.au/def/datatype/>
+        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
+        PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        SELECT distinct ?from ?to ?fromArea ?toArea ?toParent
+        WHERE {{
+            ?s dct:isPartOf <http://linked.data.gov.au/dataset/mb16cc> ;
+            rdf:subject ?from ;
+            rdf:predicate geo:sfContains ;
+            rdf:object ?to .
+            OPTIONAL {{
+                ?from geox:hasAreaM2 [
+                    data:value ?fromArea ;
+                    qb4st:crs epsg:3577
+                ] .               
+                FILTER (  datatype(?fromArea) = xsd:decimal)
+            }}
+            OPTIONAL {{
+                ?to geox:hasAreaM2 [
+                    data:value ?toArea ;
+                    qb4st:crs epsg:3577;
+                ] .     
+                FILTER (  datatype(?toArea) = xsd:decimal)
+            }}
+            OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
+                ?s1 dct:isPartOf <http://linked.data.gov.au/dataset/mb16cc> ;
+                    rdf:subject ?toParent ;
+                    rdf:predicate geo:sfContains ;
+                    rdf:object ?to .
+            }}
+            FILTER (!sameTerm(?from,?to))
+            FILTER (?from = {regionUri})
+        }}
+    '''.format(regionUri=regionUri)
     #print(query)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -357,13 +397,13 @@ def query_mb16cc_cc_to_mb(ccUri, sparql_endpoint, auth=None):
     
     res_list = []
     for res in results['results']['bindings']:
+        
         res_list.append( { #?from ?pred ?to ?fromArea ?toArea ?toParent
-                    'from': res['cc']['value'], 
-                    'pred' : res['pred']['value'], 
-                    'to': res['to']['value'], 
-                    'fromArea': res['fromArea']['value'], 
-                    'toArea' : res['toArea']['value'],
-                    'toParent': res['toParent']['value']                    
+                    'from': res['from']['value']  if 'from' in res else None, 
+                    'to': res['to']['value']  if 'to' in res else None, 
+                    'fromArea': res['fromArea']['value'] if 'fromArea' in res else None, 
+                    'toArea' : res['toArea']['value'] if 'toArea' in res else None ,
+                    'toParent': res['toParent']['value'] if 'toParent' in res else None
                 }
             )
     return res_list
