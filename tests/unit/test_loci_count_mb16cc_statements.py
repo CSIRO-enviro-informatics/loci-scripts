@@ -8,7 +8,7 @@ load_dotenv(find_dotenv())
 def test_loci_count():
     """Test integrity of LOCI cache statement counts
 
-    700754 statements for meshblocks
+    1271261 statements for mb16cc
     
     TODO: GNAF, Geofabric, rest of ASGS ...
     """
