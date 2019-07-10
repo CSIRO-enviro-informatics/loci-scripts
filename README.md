@@ -11,8 +11,31 @@ and authentication details if needed
 
 ```
 $ pip install -e .
-
 ```
+
+Example uses
+```
+# Run stats over the loci dataset
+$ python -m pyloci.sparql.generate_loci_type_count 
+```
+
+### Generate Test Data
+```
+# Run stats over the loci dataset
+$ python -m pyloci.sparql.generate_loci_type_count > ./loci-testdata/loci_type_count.json
+
+# Create loci_withins_test_data
+$ python -m pyloci.sparql.generate_loci_withins_testdata > ./loci-testdata/test_case_withins_result.json
+
+# Create loci
+$ python -m pyloci.sparql.generate_loci_mb16cc_relations_testdata > ./loci-testdata/test_case_mb16cc_relations_result.json
+```
+
+### Running tests
+```
+$ pytest
+```
+
 
 ## Rights & License
 The content of this repository is &copy; 2019 CSIRO Land and Water.  
