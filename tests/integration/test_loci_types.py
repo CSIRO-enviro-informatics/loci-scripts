@@ -4,34 +4,8 @@ import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-def query_type(loci_type, sparql_endpoint, auth=None):
-    '''
-        auth = expects a dict with 'user' and 'password' as keys with values,
-              e.g. { 'user': 'username', 'password': 'passwordhere' }
-    '''
-    sparql = SPARQLWrapper(sparql_endpoint)
+from pyloci.sparql import util
 
-    if auth !=  None:
-        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
-
-    query = '''
-        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        PREFIX loci: <http://linked.data.gov.au/def/loci#>
-        PREFIX hyf: <https://www.opengis.net/def/appschema/hy_features/hyf/>
-        PREFIX dcat: <http://www.w3.org/ns/dcat#>
-        select (count(distinct ?x) as ?count)
-        where {{
-            ?x a {definedtype}
-        }}
-    '''.format(definedtype=loci_type)
-    #print(query)
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    
-    count  = results["results"]["bindings"][0]['count']['value']
-    #print(loci_type + ", " + count)
-    return count
 
 testdata = [
     [
@@ -119,5 +93,5 @@ def test_loci_type_counts(loci_type, count):
             "password" : GRAPHDB_PASSWORD   
         }
 
-    currcount = query_type(loci_type, SPARQL_ENDPOINT, auth=auth)
+    currcount = util.count_type(loci_type, SPARQL_ENDPOINT, auth=auth)
     assert count == currcount
