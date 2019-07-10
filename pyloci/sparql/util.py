@@ -250,3 +250,56 @@ def count_type(loci_type, sparql_endpoint, auth=None):
     count  = results["results"]["bindings"][0]['count']['value']
     #print(loci_type + ", " + count)
     return count
+
+def query_intersecting_region_mb16cc(ccUri, mbUri,  sparql_endpoint, auth=None):
+    sparql = SPARQLWrapper(sparql_endpoint)
+
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
+    query = '''
+        PREFIX dct: <http://purl.org/dc/terms/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX geox: <http://linked.data.gov.au/def/geox#>
+        PREFIX data: <http://linked.data.gov.au/def/datatype/>
+        PREFIX mb: <http://linked.data.gov.au/dataset/asgs2016/meshblock/>
+        SELECT DISTINCT ?cc ?intersectionObj ?mb ?intersectingArea ?s1 ?s2
+        WHERE {{
+            ?s1 dct:isPartOf <http://linked.data.gov.au/dataset/mb16cc> ;
+            rdf:subject ?cc ;
+            rdf:predicate geo:sfContains ;
+            rdf:object ?intersectionObj .
+            ?s2 rdf:object ?intersectionObj .
+            ?s2 rdf:predicate geo:sfContains .
+            ?s2 rdf:subject ?mb .
+            ?intersectionObj a geo:Feature
+            GRAPH <http://linked.data.gov.au/dataset/mb16cc> {{        
+            OPTIONAL {{
+                ?intersectionObj geox:hasAreaM2 [
+                    data:value ?intersectingArea ;
+                ] .               
+                }}
+            }}
+            FILTER (?s1 != ?s2)
+            FILTER (?cc = {contractedCatchmentUri})
+            FILTER (?mb = {meshBlockUri} )
+        }}
+    '''.format(contractedCatchmentUri=ccUri, meshBlockUri=mbUri)
+    #print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    res_list = []
+    for res in results['results']['bindings']:
+        res_list.append( {
+                    'cc': res['cc']['value'], 
+                    'intersectionObj' : res['intersectionObj']['value'], 
+                    'mb': res['mb']['value'], 
+                    'intersectingArea': res['intersectingArea']['value'], 
+                    's1' : res['s1']['value'],
+                    's2': res['s2']['value']                    
+                }
+            )
+    return res_list

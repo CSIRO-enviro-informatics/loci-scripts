@@ -15,9 +15,12 @@ def get_verification_data():
     return data
 
 
+testdata = [
+    [ '<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12202179>' , '<http://linked.data.gov.au/dataset/asgs2016/meshblock/30563893800>', '725451412.929990' ]
+]
 
-@pytest.mark.parametrize("loci_type,count", get_verification_data())
-def test_loci_type_counts(loci_type, count):
+@pytest.mark.parametrize("gfcc,mb,areaM2", testdata)
+def test_loci_intersect_area(gfcc, mb, areaM2):
     '''Test loci type counts
     '''
     GRAPHDB_USER = os.getenv("GRAPHDB_USER")
@@ -31,5 +34,6 @@ def test_loci_type_counts(loci_type, count):
             "password" : GRAPHDB_PASSWORD   
         }
 
-    currcount = util.count_type(loci_type, SPARQL_ENDPOINT, auth=auth)
-    assert count == currcount
+    res_list = util.query_intersecting_region_mb16cc(gfcc, mb, SPARQL_ENDPOINT, auth=auth)
+
+    assert len(res_list) == 1 and 'intersectingArea' in res_list[0] and res_list[0]['intersectingArea'] == areaM2
