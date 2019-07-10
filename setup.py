@@ -7,5 +7,5 @@ setup(name='pyloci',
       author='CSIRO',
       author_email='csiroenquiries@csiro.au',
       license='MIT',
-      packages=find_packages(),
+      packages=['pyloci'],
       zip_safe=False)
