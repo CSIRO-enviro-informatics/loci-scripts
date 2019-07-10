@@ -46,6 +46,6 @@ def test_loci_count():
     print(results)
     
     count_mb_stmt = results["results"]["bindings"][0]['count']['value']
-    assert int(count_mb_stmt) == 700754    
+    assert int(count_mb_stmt) == 1271261    
 
    
