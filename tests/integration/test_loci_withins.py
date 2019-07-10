@@ -50,12 +50,10 @@ def get_verification_data():
         data = json.load(json_file)        
     return data
 
-@pytest.mark.parametrize("verification_data", get_data())
+@pytest.mark.parametrize("verification_data", get_verification_data())
 def test_file(verification_data):
     for test_case in verification_data:
-        
-
-
+        print(test_case)
     assert True
 
 def loci_relations(obj):

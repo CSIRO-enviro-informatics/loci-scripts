@@ -7,6 +7,13 @@
 Copy the env-template to .env and edit the file to specify which sparql endpoint
 and authentication details if needed
 
+### Setup
+
+```
+$ pip install -e .
+
+```
+
 ## Rights & License
 The content of this repository is &copy; 2019 CSIRO Land and Water.  
 The content of this repository is distributed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0)
