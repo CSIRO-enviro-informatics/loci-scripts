@@ -1,4 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+import re
 
 def query_type(loci_type, sparql_endpoint, auth=None):
     '''
