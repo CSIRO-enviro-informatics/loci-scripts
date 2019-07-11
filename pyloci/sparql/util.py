@@ -390,6 +390,68 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None):
             FILTER (?from = {regionUri})
         }}
     '''.format(regionUri=regionUri)
+
+    query = '''
+        PREFIX dct: <http://purl.org/dc/terms/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX geox: <http://linked.data.gov.au/def/geox#>
+        PREFIX data: <http://linked.data.gov.au/def/datatype/>
+        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
+        PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        SELECT distinct ?from ?to ?fromAreaLinkset ?fromAreaDataset ?toAreaLinkset ?toAreaDataset ?toParent
+        WHERE {{
+            ?s dct:isPartOf ?ls ;
+            rdf:subject ?from ;
+            rdf:predicate geo:sfContains ;
+            rdf:object ?to .
+            OPTIONAL {{
+                GRAPH ?ls {{
+                ?from geox:hasAreaM2 [
+                    data:value ?fromAreaLinkset ;
+                    qb4st:crs epsg:3577
+                ] .               
+                }}
+            }}
+            OPTIONAL {{
+                GRAPH ?g1 {{
+                ?from geox:hasAreaM2 [
+                    data:value ?fromAreaDataset ;
+                    qb4st:crs epsg:3577
+                ] .               
+                }}
+                FILTER (?g1 != ?ls)
+            }}
+            OPTIONAL {{
+                GRAPH ?ls {{
+                ?to geox:hasAreaM2 [
+                    data:value ?toAreaLinkset ;
+                    qb4st:crs epsg:3577;
+                ] .     
+                }}
+            }}
+            OPTIONAL {{
+                GRAPH ?g2 {{
+                ?to geox:hasAreaM2 [
+                    data:value ?toAreaDataset ;
+                    qb4st:crs epsg:3577;
+                ] .     
+                }}
+                FILTER (?g2 != ?ls)
+            }}   
+            OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
+
+                ?s1 dct:isPartOf ?ls ;
+                    rdf:subject ?toParent ;
+                    rdf:predicate geo:sfContains ;
+                    rdf:object ?to .
+            }}
+            FILTER (!sameTerm(?from,?to))
+            FILTER (?from = {regionUri})
+            FILTER (?ls = <http://linked.data.gov.au/dataset/mb16cc>)
+        }}'''.format(regionUri=regionUri)
+
     #print(query)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -401,8 +463,10 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None):
         res_list.append( { #?from ?pred ?to ?fromArea ?toArea ?toParent
                     'from': res['from']['value']  if 'from' in res else None, 
                     'to': res['to']['value']  if 'to' in res else None, 
-                    'fromArea': res['fromArea']['value'] if 'fromArea' in res else None, 
-                    'toArea' : res['toArea']['value'] if 'toArea' in res else None ,
+                    'fromAreaLinkSet': res['fromAreaLinkSet']['value'] if 'fromAreaLinkSet' in res else None, 
+                    'fromAreaDataset': res['fromAreaDataset']['value'] if 'fromAreaDataset' in res else None, 
+                    'toAreaLinkset' : res['toAreaLinkset']['value'] if 'toAreaLinkset' in res else None ,
+                    'toAreaDataset' : res['toAreaDataset']['value'] if 'toAreaDataset' in res else None ,
                     'toParent': res['toParent']['value'] if 'toParent' in res else None
                 }
             )
