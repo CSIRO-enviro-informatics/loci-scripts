@@ -146,7 +146,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.input_csv_file:
-        print(args)
         user_input_csv = args.input_csv_file
         is_output_to_file = False
         outputfile = None
