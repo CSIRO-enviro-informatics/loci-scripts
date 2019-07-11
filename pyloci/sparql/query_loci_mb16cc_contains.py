@@ -18,7 +18,7 @@ GRAPHDB_PASSWORD = os.getenv("GRAPHDB_PASSWORD")
 SPARQL_ENDPOINT =  os.getenv("SPARQL_ENDPOINT")
 
 
-def run_query(curr, sparql_endpoint, auth):
+def query_contains_for_stats(curr, sparql_endpoint, auth):
     """Runs the geo:sfContains relation query
      Parameters
     ----------
@@ -44,56 +44,64 @@ def run_query(curr, sparql_endpoint, auth):
         elif 'fromAreaDataset' in d and d['fromAreaDataset'] != None:
            fromArea = float(d['fromAreaDataset'])
     
-    percentFromArea = 0.0
+    diff = fromArea-sum
+    percentDiffFromArea = 100.0
     if fromArea > 0.0:
-        percentFromArea = ((fromArea-sum)/fromArea)*100.0
+        percentDiffFromArea = (diff/fromArea)*100.0
 
-    line = '{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n'.format(
-        "fromArea:", fromArea, 
-        "sum toArea:", sum, 
-        "diff:", fromArea-sum,
-        "% of fromArea:", percentFromArea
-    )
-    print(line)
+    return (fromArea, sum, diff, percentDiffFromArea)
 
 
 def validate_uri_syntax(input_str):
     return bool(re.match(r"<http://.+>", input_str))
 
-auth = None
-# set auth only if .env has credentials
-if(GRAPHDB_USER != None and GRAPHDB_PASSWORD != None):
-    auth = { 
-        "user" : GRAPHDB_USER,
-        "password" : GRAPHDB_PASSWORD   
-    }
+def print_report(fromArea, sum, diff, percentDiffFromArea):
+    line = '{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n'.format(
+    "fromArea:", fromArea, 
+    "sum toArea:", sum, 
+    "diff:", fromArea-sum,
+    "% of fromArea:", percentDiffFromArea
+    )
+    print(line)
 
-#use this precanned list if there is no user input via sys.argv[1]
-loci_thing_list = [
-    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12101547>",
-    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12202179>",
-    "<http://linked.data.gov.au/dataset/asgs2016/meshblock/80044260000>",
-    "<http://linked.data.gov.au/dataset/asgs2016/meshblock/70033750000>",
-    "<http://linked.data.gov.au/dataset/asgs2016/meshblock/30562872900>",
-    "<http://linked.data.gov.au/dataset/asgs2016/meshblock/20686780000>",
-    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12104853>",
-    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12105135>",
-    "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12105134>"    
-]
+if __name__ == "__main__":
+    auth = None
+    # set auth only if .env has credentials
+    if(GRAPHDB_USER != None and GRAPHDB_PASSWORD != None):
+        auth = { 
+            "user" : GRAPHDB_USER,
+            "password" : GRAPHDB_PASSWORD   
+        }
 
-if len(sys.argv) > 1:
-    user_input_uri = sys.argv[1]
-else:
-    user_input_uri = None
+    #use this precanned list if there is no user input via sys.argv[1]
+    loci_thing_list = [
+        "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12101547>",
+        "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12202179>",
+        "<http://linked.data.gov.au/dataset/asgs2016/meshblock/80044260000>",
+        "<http://linked.data.gov.au/dataset/asgs2016/meshblock/70033750000>",
+        "<http://linked.data.gov.au/dataset/asgs2016/meshblock/30562872900>",
+        "<http://linked.data.gov.au/dataset/asgs2016/meshblock/20686780000>",
+        "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12104853>",
+        "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12105135>",
+        "<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12105134>"    
+    ]
 
-matches = []
-
-if user_input_uri != None :
-    if validate_uri_syntax(user_input_uri):
-        run_query(user_input_uri, SPARQL_ENDPOINT, auth)
+    if len(sys.argv) > 1:
+        user_input_uri = sys.argv[1]
     else:
-        print("Please provide a valid URI in the form <http://...>")
-else:
-    for curr in loci_thing_list:
-        run_query(curr, SPARQL_ENDPOINT, auth)
+        user_input_uri = None
+
+    matches = []
+
+    if user_input_uri != None :
+        if validate_uri_syntax(user_input_uri):
+            (fromArea, sum, diff, percentDiffFromArea) = query_contains_for_stats(user_input_uri, SPARQL_ENDPOINT, auth)
+            print_report(fromArea, sum, diff, percentDiffFromArea)
+        else:
+            print("Please provide a valid URI in the form <http://...>")
+            exit(1)
+    else:
+        for curr in loci_thing_list:
+            (fromArea, sum, diff, percentDiffFromArea) = query_contains_for_stats(curr, SPARQL_ENDPOINT, auth)
+            print_report(fromArea, sum, diff, percentDiffFromArea)
 

@@ -30,8 +30,8 @@ $ python -m pyloci.sparql.query_loci_mb16cc_contains '<http://linked.data.gov.au
 # Run stats over the loci dataset
 $ python -m pyloci.sparql.generate_loci_type_count > ./loci-testdata/loci_type_count.json
 
-# Create loci_withins_test_data
-$ python -m pyloci.sparql.generate_loci_withins_testdata > ./loci-testdata/test_case_withins_result.json
+# Create test_case_contains_result testdata
+$ python -m pyloci.sparql.generate_loci_contains_testdata > ./loci-testdata/test_case_contains_result.json
 
 # Create loci mb16cc relations test data - query mb and cc relationships (without specifying the predicate)
 $ python -m pyloci.sparql.generate_loci_mb16cc_relations_testdata > ./loci-testdata/test_case_mb16cc_relations_result.json
