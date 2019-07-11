@@ -31,6 +31,7 @@ def read_data_from_input_csv(csvfile):
     '''Read data from csv into rows 
     '''
     csvdata = []
+    print(csvfile)
     with open(csvfile, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
@@ -87,7 +88,11 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
 
     for row in csvdata:
         #process_row_from_input_csv(row, SPARQL_ENDPOINT, auth=auth)
-        (col1, col2) = print_row(row)
+        if verbose_mode:
+            (col1, col2) = print_row(row)
+        else:
+            col1 = row.popitem(last=False) 
+            col2 = row.popitem(last=False) 
         
         #get contains for col1 - assume this to be the uri row
         region_uri  = "<" + col1[1] + ">"
@@ -141,18 +146,35 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Reapportion values from csv using Loc-I')
     parser.add_argument('--verbose', dest='verbose', action='store_true',  help="Verbose mode. Include extra print outputs (default: off)")
     parser.add_argument('-o', '--outputfile', dest='outputfile', help='specify outputfile (default: print to stdout)')
-    parser.add_argument('input_csv_file', help='input csv')
+    parser.add_argument('-d', '--input-directory', dest='use_input_directory',  action='store_true', help='specify to use input directory with csv files. will outputs to filename')    
+    parser.add_argument('input_csv_file_or_dir', help='input csv file or directory of csvs')
 
     args = parser.parse_args()
 
-    if args.input_csv_file:
-        user_input_csv = args.input_csv_file
+    if args.input_csv_file_or_dir:
+        user_input_csv_file_or_dir = args.input_csv_file_or_dir
         is_output_to_file = False
         outputfile = None
         if args.outputfile != None:
             is_output_to_file = True
             outputfile = args.outputfile
-        entrypoint(user_input_csv, verbose_mode=args.verbose, output_to_file=is_output_to_file, outputfile=outputfile)
+        if args.use_input_directory:
+            import glob
+            #iterate over files with .csv and write to result_*.csv
+            working_dir = os.path.abspath(".")
+            extension = 'csv'
+            os.chdir(user_input_csv_file_or_dir)
+            result = glob.glob('*.{}'.format(extension))
+            for csvfile in result:                
+                outputfile = "result_"+csvfile
+                outputfile_path = outputfile
+                user_input_csv_file =  csvfile
+                print("Processing " + user_input_csv_file)
+                print("Emitting to... " + outputfile_path)
+
+                entrypoint(user_input_csv_file, verbose_mode=args.verbose, output_to_file=True, outputfile=outputfile_path)
+        else:
+            entrypoint(args.input_csv_file_or_dir, verbose_mode=args.verbose, output_to_file=is_output_to_file, outputfile=outputfile)
     else:
         user_input_csv = None
         print("Please specify an input csv. Exiting...")
