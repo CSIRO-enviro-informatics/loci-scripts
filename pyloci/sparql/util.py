@@ -27,7 +27,7 @@ def query_type(loci_type, sparql_endpoint, auth=None):
     results = sparql.query().convert()
     
     count  = results["results"]["bindings"][0]['count']['value']
-    print(loci_type + ", " + count)
+    #print(loci_type + ", " + count)
     return count
 
 def query_sfWithin_mb_or_cc(locationUri, sparql_endpoint, auth=None):
@@ -467,7 +467,7 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None):
         res_list.append( { #?from ?pred ?to ?fromArea ?toArea ?toParent
                     'from': res['from']['value']  if 'from' in res else None, 
                     'to': res['to']['value']  if 'to' in res else None, 
-                    'fromAreaLinkSet': res['fromAreaLinkSet']['value'] if 'fromAreaLinkSet' in res else None, 
+                    'fromAreaLinkset': res['fromAreaLinkset']['value'] if 'fromAreaLinkset' in res else None, 
                     'fromAreaDataset': res['fromAreaDataset']['value'] if 'fromAreaDataset' in res else None, 
                     'toAreaLinkset' : res['toAreaLinkset']['value'] if 'toAreaLinkset' in res else None ,
                     'toAreaDataset' : res['toAreaDataset']['value'] if 'toAreaDataset' in res else None ,
