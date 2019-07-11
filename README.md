@@ -39,6 +39,8 @@ $ python -m pyloci.reapportioning ./loci-testdata/excelerator/single-cc-mb16-wit
 # reapportion single-cc-mb16-within.csv in non-verbose mode with output to specific csv file
 $ python -m pyloci.reapportioning -o output.csv ./loci-testdata/excelerator/single-cc-mb16-within.csv
 
+# process all .csv files in input dir ('-d' specifies process directory mode)
+$ python -m pyloci.reapportioning -d  ./loci-testdata/excelerator
 ```
 
 ### Generate Test Data
