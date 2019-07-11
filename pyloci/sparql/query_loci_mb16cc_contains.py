@@ -52,9 +52,6 @@ def query_contains_for_stats(curr, sparql_endpoint, auth):
     return (fromArea, sum, diff, percentDiffFromArea)
 
 
-def validate_uri_syntax(input_str):
-    return bool(re.match(r"<http://.+>", input_str))
-
 def print_report(fromArea, sum, diff, percentDiffFromArea):
     line = '{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n{:>15} {:>20.4f}\n'.format(
     "fromArea:", fromArea, 
@@ -94,7 +91,7 @@ if __name__ == "__main__":
     matches = []
 
     if user_input_uri != None :
-        if validate_uri_syntax(user_input_uri):
+        if util.validate_uri_syntax(user_input_uri):
             (fromArea, sum, diff, percentDiffFromArea) = query_contains_for_stats(user_input_uri, SPARQL_ENDPOINT, auth)
             print_report(fromArea, sum, diff, percentDiffFromArea)
         else:

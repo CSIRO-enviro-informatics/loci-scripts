@@ -572,3 +572,7 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
                 }
             )
     return res_list
+
+
+def validate_uri_syntax(input_str):
+    return bool(re.match(r"<http://.+>", input_str))
