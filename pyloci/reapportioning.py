@@ -60,12 +60,22 @@ def normalise_matches(inputmatch_list):
         data['fromArea'] = match['fromAreaLinkset'] if match['fromAreaLinkset'] != None else match['fromAreaDataset']
         data['toArea'] = match['toAreaLinkset'] if match['toAreaLinkset'] != None else match['toAreaDataset']
         data['toParent'] = match['toParent']
+        data['pred'] = match['pred']
+
 
         data['is_intersection_area'] = False
         if data['toParent'] != None:
             data['is_intersection_area'] = True
         data_list.append(data)
-        data['proportion'] = float(data['toArea']) / float(data['fromArea'])
+
+        print(match['pred'])
+        #if data['fromArea'] < data['toArea']:
+        if match['pred'] == 'http://www.opengis.net/ont/geosparql#sfContains':
+            data['proportion'] = float(data['toArea']) / float(data['fromArea'])
+        elif match['pred'] == 'http://www.opengis.net/ont/geosparql#sfWithin':
+            data['proportion'] = 1 #don't scale the amount as this thing is wholely in another thing
+        else:
+            data['proportion'] = 0 #TODO: What other predicates could there be? default to 0 for now
         
     return data_list
             
@@ -100,7 +110,7 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
         region_data_col_value = col2[1]   
 
         #query matches
-        res_list = util.query_mb16cc_contains(region_uri, SPARQL_ENDPOINT, auth)
+        res_list = util.query_mb16cc_contains_or_within(region_uri, SPARQL_ENDPOINT, auth, verbose=verbose_mode)
         if verbose_mode: 
             print('No. matches: {}'.format(len(res_list)))
 
