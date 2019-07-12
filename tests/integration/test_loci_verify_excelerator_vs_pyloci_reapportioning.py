@@ -116,7 +116,18 @@ def test_loci_reapportioning_results_comparable():
                     print("Item count for {} differs".format(key))
                     print("excelerator: " + str(e_val_list))
                     print("pyloci: " + str(p_val_list))
-                    report_dict = add_failed_test_report(report_dict, b, 'item_count_differs', key, "excelerator: " + str(e_val_list) + "; pyloci: " + str(p_val_list))
+
+                    # if count differs then ensure that the values match up
+                    e_val = sum([float(i) for i in e_val_list])
+                    p_val = sum([float(i) for i in p_val_list])
+                    diff = e_val - p_val
+                    percent_of_e_val = diff/e_val*100
+                    print("Diff: {}, Percent of e_val: {}".format(diff, percent_of_e_val))
+                    if abs(percent_of_e_val) > 10 and abs(diff) > 0.000001:
+                        print("Diff is > 10%!")
+                        report_dict = add_failed_test_report(report_dict, b, 'item_count_differs_and_sum_difference_exceeds_threshold', key, "Diff: {}, Percent of e_val: {}".format(diff, percent_of_e_val))
+                        report_dict = add_failed_test_report(report_dict, b, 'item_count_differs', key, "excelerator: " + str(e_val_list) + "; pyloci: " + str(p_val_list))
+                        
 
                 else:
                     if len(e_val_list) == 1 and len(p_val_list) == 1:
