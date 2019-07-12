@@ -48,23 +48,18 @@ loci_cc_list = parse_input_file(test_case_file)
 #query()
 #print(auth)
 matches = []
-test_case_withins_list = {}
+test_case_contains_list = []
 
 for (testcase,uristr) in loci_cc_list:
     uri = "<" + uristr + ">"
     #print(testcase)
     #print(uristr)
-    #withins_list = util.query_sfWithin_mb_or_cc(uri, SPARQL_ENDPOINT, auth=auth)
-    withins_list = util.query_mb16cc_relation(uri, SPARQL_ENDPOINT, relationship="geo:sfContains", auth=auth)
-    if testcase in test_case_withins_list:
-        test_case_withins_list[testcase][uristr] = withins_list
-    else:
-        test_case_withins_list[testcase] = {}
-        test_case_withins_list[testcase][uristr] = withins_list
-
+    contains_list = util.query_mb16cc_relation(uri, SPARQL_ENDPOINT, relationship="geo:sfContains", auth=auth)
+    test_case_contains_list.append([testcase, uristr,contains_list])
+    
     #for fromURI,matching_withins in withins_list:
     #    print(fromURI + "," + matching_withins)
     #print(json.dumps(withins_list, indent=4, sort_keys=True))
 
     
-print(json.dumps(test_case_withins_list, indent=4, sort_keys=True))
+print(json.dumps(test_case_contains_list, indent=4, sort_keys=True))
