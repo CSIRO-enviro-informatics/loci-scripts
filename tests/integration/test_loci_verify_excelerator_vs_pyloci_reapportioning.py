@@ -125,7 +125,7 @@ def test_loci_reapportioning_results_comparable():
                         diff = e_val - p_val
                         percent_of_e_val = diff/e_val*100
                         print("Diff: {}, Percent of e_val: {}".format(diff, percent_of_e_val))
-                        if abs(percent_of_e_val) > 10:
+                        if abs(percent_of_e_val) > 10 and abs(diff) > 0.000001:
                             report_dict = add_failed_test_report(report_dict, b, 'value_reapportioned_diff_exceeds_10percent', key, "Diff: {}, Percent of e_val: {}".format(diff, percent_of_e_val))
                             print("Diff is > 10%!")
                         
