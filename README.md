@@ -26,6 +26,24 @@ $ python -m pyloci.sparql.query_loci_mb16cc_contains
 # query contains for a precanned set of uris
 $ python -m pyloci.sparql.query_loci_mb16cc_contains '<http://linked.data.gov.au/dataset/geofabric/contractedcatchment/12101547>'
 ```
+### Reapportioning use case
+
+```
+# reapportion single-cc-mb16-within.csv in verbose mode with output to specific csv file
+$ python -m pyloci.reapportioning --verbose -o output.csv ./loci-testdata/excelerator/single-cc-mb16-within.csv
+
+# reapportion single-cc-mb16-within.csv in verbose mode with output to stdout
+$ python -m pyloci.reapportioning --verbose ./loci-testdata/excelerator/single-cc-mb16-within.csv
+
+# reapportion single-cc-mb16-within.csv in non-verbose mode with output to stdout
+$ python -m pyloci.reapportioning ./loci-testdata/excelerator/single-cc-mb16-within.csv
+
+# reapportion single-cc-mb16-within.csv in non-verbose mode with output to specific csv file
+$ python -m pyloci.reapportioning -o output.csv ./loci-testdata/excelerator/single-cc-mb16-within.csv
+
+# process all .csv files in input dir ('-d' specifies process directory mode)
+$ python -m pyloci.reapportioning -d  ./loci-testdata/excelerator
+```
 
 ### Generate Test Data
 ```
@@ -35,11 +53,14 @@ $ python -m pyloci.sparql.generate_loci_type_count > ./loci-testdata/loci_type_c
 # Create test_case_contains_result testdata
 $ python -m pyloci.sparql.generate_loci_contains_testdata > ./loci-testdata/test_case_contains_result.json
 
-# Create loci mb16cc relations test data - query mb and cc relationships (without specifying the predicate)
-$ python -m pyloci.sparql.generate_loci_mb16cc_relations_testdata > ./loci-testdata/test_case_mb16cc_relations_result.json
-
 # Create reapportioning test dataset - queries contains for Test Case A-C set of URIs 
 $ python -m pyloci.sparql.generate_loci_reapportioning_testdata > ./loci-testdata/loci_reapportioning_testdata.json
+
+
+# Create loci mb16cc relations test data - query mb and cc relationships (without specifying the predicate) - currently broken :(
+$ python -m pyloci.sparql.generate_loci_mb16cc_relations_testdata > ./loci-testdata/test_case_mb16cc_relations_result.json
+
+
 ```
 
 ### Running tests
