@@ -1,5 +1,7 @@
 # LOC-I SCRIPTS and pyloci
 
+[![Build Status](https://travis-ci.org/CSIRO-enviro-informatics/loci-scripts.svg?branch=master)](https://travis-ci.org/CSIRO-enviro-informatics/loci-scripts)
+
 ### A collection of scripts, snippets, and mini-apps from the LOC-I Project
 
 ### .env
