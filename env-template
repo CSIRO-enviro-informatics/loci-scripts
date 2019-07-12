@@ -1,10 +1,8 @@
 #largecache/smallcache
 #SPARQL_ENDPOINT=http://db.loci.cat/repositories/smallcache
 #SPARQL_ENDPOINT=http://db.loci.cat/repositories/largecache
-#ashleys test instance
-#SPARQL_ENDPOINT=http://13.238.155.4:7200/repositories/repo-test-1
-
-SPARQL_ENDPOINT=http://13.238.155.4:7200/repositories/repo-test-1
+#prototype instance
+SPARQL_ENDPOINT=http://db.loci.cat:7200/repositories/repo-test-1
 
 #uncomment the following if auth needed
 #GRAPHDB_USER=ro
