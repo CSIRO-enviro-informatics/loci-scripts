@@ -6,4 +6,4 @@ install:
   - pip install -e .
   - cp env-template .env
 script:
-  pytest
+  pytest --ignore=tests/application/
