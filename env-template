@@ -3,7 +3,7 @@
 #SPARQL_ENDPOINT=http://db.loci.cat/repositories/largecache
 #prototype instance
 SPARQL_ENDPOINT=http://db.loci.cat:7200/repositories/repo-test-1
-
+EXCELERATOR_URL=http://excelerator.loci.cat
 #uncomment the following if auth needed
 #GRAPHDB_USER=ro
 #GRAPHDB_PASSWORD=changeme

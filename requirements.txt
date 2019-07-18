@@ -4,3 +4,4 @@ xlsxwriter
 SPARQLWrapper
 rdflib
 python-dotenv
+requests

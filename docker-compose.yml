@@ -1,0 +1,10 @@
+version: '3'
+services:
+  application_tests:
+    image: joyzoursky/python-chromedriver:3.7-selenium
+    volumes:
+      - .:/loci-scripts
+    command: "/bin/sh -c 'cd /loci-scripts && export $$(grep -v '^#' .env | xargs) && pip install -r requirements.txt && pytest --ignore=tests/unit --ignore=tests/integration'"
+    #command: "python test_script.py"
+    #command: "tail -f /dev/null"
+
