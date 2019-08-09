@@ -188,7 +188,39 @@ def query_sfWithin_mb_or_cc_with_graph(locationUri, sparql_endpoint, auth=None):
     #do something    
     return withins_list
 
+import json
+def query_list_objects_sfContains_matching_loci_thing(loci_thing, loci_match_type, sparql_endpoint, auth=None):
+    '''
+        auth = expects a dict with 'user' and 'password' as keys with values,
+              e.g. { 'user': 'username', 'password': 'passwordhere' }
+    '''
+    sparql = SPARQLWrapper(sparql_endpoint)
 
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
+    query = '''
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?o 
+        WHERE {{ 
+            {loci_subject} geo:sfContains+ ?o .
+            ?o a {loci_type} .    
+        }}
+    '''.format(loci_subject=loci_thing, loci_type=loci_match_type)
+    #print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    #print(json.dumps(results, indent=4, sort_keys=True))
+
+    matching_list = []
+    for r in results["results"]["bindings"]:
+        if 'o' in r:
+            matching_list.append(r['o']['value'])
+
+    #do something    
+    return matching_list
 
 def query_sfWithin(loci_thing, sparql_endpoint, auth=None):
     '''
