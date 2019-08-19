@@ -333,7 +333,7 @@ def query_intersecting_region_mb16cc(ccUri, mbUri,  sparql_endpoint, auth=None):
             )
     return res_list
 
-def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None, verbose=False):
+def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None, verbose=True):
     sparql = SPARQLWrapper(sparql_endpoint)
 
     if auth !=  None:
@@ -556,7 +556,7 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-        SELECT distinct ?from ?to ?fromAreaLinkset ?fromAreaDataset ?toAreaLinkset ?toAreaDataset ?toParent
+        SELECT distinct ?from ?to ?fromAreaLinkset (min(?fromAreaLinkset) as ?fromAreaLinkset) (min(?toAreaLinkset) as ?toAreaLinkset) ?toParent 
         WHERE {{
             ?s dct:isPartOf ?ls ;
             rdf:subject ?from ;
@@ -583,7 +583,8 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
             FILTER (!sameTerm(?from,?to))
             FILTER (?from = {regionUri})
             FILTER (?ls = <http://linked.data.gov.au/dataset/mb16cc>)
-        }}'''.format(regionUri=regionUri, relationship=relationship)
+        }} group by ?from ?s ?to ?toParent
+        '''.format(regionUri=regionUri, relationship=relationship)
 
     #print(query)
     sparql.setQuery(query)
