@@ -364,7 +364,6 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None, verbose=False):
                     data:value ?toAreaLinkset ;
                     qb4st:crs epsg:3577;
                 ] .     
-                }}
             }}
             OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
                 ?s1 dct:isPartOf ?ls ;
