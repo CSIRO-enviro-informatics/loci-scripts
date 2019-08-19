@@ -5,3 +5,5 @@ SPARQLWrapper
 rdflib
 python-dotenv
 requests
+boto3
+awscli
