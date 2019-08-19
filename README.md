@@ -15,6 +15,15 @@ and authentication details if needed
 $ pip install -e .
 ```
 
+For tests involving selenium, `chromedriver` is required.
+```
+# Install on windows
+$ choco install chromedriver
+
+# Install on linux
+# See https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/
+```
+
 Example uses
 ```
 # Run stats over the loci dataset
