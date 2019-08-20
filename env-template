@@ -4,6 +4,7 @@
 #prototype instance
 SPARQL_ENDPOINT=http://db.loci.cat:7200/repositories/repo-test-1
 EXCELERATOR_URL=http://excelerator.loci.cat
+S3_BUCKET=http://loci-assets.s3-website-ap-southeast-2.amazonaws.com/source-data
 #uncomment the following if auth needed
 #GRAPHDB_USER=ro
 #GRAPHDB_PASSWORD=changeme

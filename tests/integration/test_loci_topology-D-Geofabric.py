@@ -84,6 +84,10 @@ def test_loci_topology(testinput):
         matches = run_query(test_instance_uri, t)
         #print(matches)
 
+        if len(matches) != len(expecteddata):
+            eval_diff_and_save_to_file(testinput['testcase'], expecteddata, matches)
+
+
         #run matches against expecteddata
         assert len(matches) == len(expecteddata)
 
@@ -91,3 +95,29 @@ def test_loci_topology(testinput):
     #read expected data from file based on id
     assert True
 
+
+def eval_diff_and_save_to_file(testcase_id, expected_csv_list, matches_sparql_list):
+    #get list of hydroids from expected_csv_list
+    expected_hydroid_list = []
+    matches_hydroid_list = []
+    for item in expected_csv_list:
+        expected_hydroid_list.append(item["HydroID"])
+
+    for item in matches_sparql_list:
+        m_hydroid = item.rsplit('/', 1)[-1]
+        matches_hydroid_list.append(m_hydroid)
+
+    # things in matches not in expected
+    diff = sorted(list(set(matches_hydroid_list) - set(expected_hydroid_list)))
+    # things in expected not in matches
+    diff2 = sorted(list(set(expected_hydroid_list) - set(matches_hydroid_list)))
+
+    with open('./loci-testdata/test-case-d/Testoutput-' + testcase_id + '.csv', 'w', newline='') as csvfile:
+        fieldnames = ['hydroid', 'source']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for x in diff:
+            writer.writerow({'hydroid': x, 'source': 'cache_matches'})
+        for y in diff2:
+            writer.writerow({'hydroid': y, 'source': 'expected_testdata'})
