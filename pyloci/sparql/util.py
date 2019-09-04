@@ -606,6 +606,38 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
             )
     return res_list
 
+def query_uri_id_mapping_table(featureTypeUri, idPropertyUri, sparql_endpoint, auth=None):
+    '''Queries loci cache for <id, uri> mappings
+
+    Parameters
+    ----------
+    * featureTypeUri: region used in the from field of the query
+    * idPropertyUri: region used in the from field of the query
+    * sparql_endpoint: which sparql endpoint to use
+    * auth: authentication details, if needed (optional)
+    '''
+    
+    sparql = SPARQLWrapper(sparql_endpoint)
+
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
+    query = '''
+        SELECT ?id ?lociUri WHERE {{
+	        ?lociUri a {featureTypeUri} .
+            ?lociUri {idPropertyUri} ?id .    
+        }}
+        orderby ?id
+    '''.format(featureTypeUri=featureTypeUri, idPropertyUri=idPropertyUri)
+    print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    res_list = []
+    for res in results['results']['bindings']:                
+        res_list.append( [ res['id']['value'], res['lociUri']['value'] ] )
+    return res_list
 
 def validate_uri_syntax(input_str):
     return bool(re.match(r"<http://.+>", input_str))
