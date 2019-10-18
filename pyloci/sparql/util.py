@@ -701,7 +701,7 @@ def iterate_query_for_labels_of_location(offset, limit, sparql_endpoint, auth=No
             )
     return res_list
 
-def query_labels_from_locations(sparql_endpoint, auth=None, verbose=False, offset=0, limit=10000, max=None):
+def query_labels_from_locations(sparql_endpoint, auth=None, verbose=False, offset=0, limit=1000000, max=None):
     count = 0
     curr_offset = offset
     #print from here
