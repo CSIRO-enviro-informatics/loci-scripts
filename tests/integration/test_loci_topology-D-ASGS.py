@@ -83,6 +83,9 @@ def test_loci_topology(testinput):
         #run sparql query to get the sfContains of the test_instance_uri obj
         matches = run_query(test_instance_uri, t)
         #print(matches)
+        
+        if len(matches) != len(expecteddata):
+            eval_diff_and_save_to_file(testinput['testcase'], expecteddata, matches, "MB_CODE16")
 
         #run matches against expecteddata
         assert len(matches) == len(expecteddata)
@@ -90,4 +93,31 @@ def test_loci_topology(testinput):
 
     #read expected data from file based on id
     assert True
+
+
+def eval_diff_and_save_to_file(testcase_id, expected_csv_list, matches_sparql_list, expected_id_fieldname):
+    #get list of ids from expected_csv_list
+    expected_id_list = []
+    matches_id_list = []
+    for item in expected_csv_list:
+        expected_id_list.append(item[expected_id_fieldname])
+
+    for item in matches_sparql_list:
+        m_hydroid = item.rsplit('/', 1)[-1]
+        matches_id_list.append(m_hydroid)
+
+    # things in matches not in expected
+    diff = sorted(list(set(matches_id_list) - set(expected_id_list)))
+    # things in expected not in matches
+    diff2 = sorted(list(set(expected_id_list) - set(matches_id_list)))
+
+    with open('./loci-testdata/test-case-d/Testoutput-' + testcase_id + '.csv', 'w', newline='') as csvfile:
+        fieldnames = ['id', 'source']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for x in diff:
+            writer.writerow({'id': x, 'source': 'cache_matches'})
+        for y in diff2:
+            writer.writerow({'id': y, 'source': 'expected_testdata'})
 
