@@ -641,3 +641,123 @@ def query_uri_id_mapping_table(featureTypeUri, idPropertyUri, sparql_endpoint, a
 
 def validate_uri_syntax(input_str):
     return bool(re.match(r"<http://.+>", input_str))
+
+def iterate_query_for_labels_of_location(offset, limit, sparql_endpoint, auth=None, verbose=False):
+    sparql = SPARQLWrapper(sparql_endpoint)
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+    query = '''
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX prov: <http://www.w3.org/ns/prov#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX asgs: <http://linked.data.gov.au/def/asgs#> 
+        PREFIX gnaf: <http://linked.data.gov.au/def/gnaf#> 
+        PREFIX reg: <http://purl.org/linked-data/registry#>
+
+        SELECT DISTINCT ?l ?label
+        WHERE {{
+            {{ ?l a geo:Feature }}
+            UNION
+            {{
+                ?c1 rdfs:subClassOf+ geo:Feature .
+                ?l a ?c1 .
+            }}
+            UNION
+            {{
+                ?s1 rdf:subject ?l ;
+                    rdf:predicate rdf:type ;
+                    rdf:object geo:Feature .
+            }}
+            UNION
+            {{ ?l a prov:Location }}
+            UNION
+            {{
+                ?c2 rdfs:subClassOf+ prov:Location .
+                ?l a ?c2 .
+            }}
+            UNION
+            {{
+                ?s2 rdf:subject ?l ;
+                    rdf:predicate rdf:type ;
+                    rdf:object prov:Location .
+            }} .
+            {{
+                ?l asgs:mbCode2016 ?label
+            }}
+            UNION
+            {{
+                ?l asgs:sa3Name2016 ?label
+            }}
+            UNION
+            {{
+                ?l asgs:sa4Name2016 ?label
+            }}
+            UNION
+            {{
+                ?l asgs:label  ?label
+            }}
+            UNION
+            {{
+                ?l asgs:stateName2016 ?label
+            }}
+            UNION
+            {{
+                ?l rdfs:label ?label
+            }}
+            UNION
+            {{
+                ?l  rdfs:comment ?label
+            }}
+            UNION
+            {{
+                ?l  gnaf:hasName ?label
+            }}
+        }}
+        OFFSET {offset}
+        LIMIT {limit}
+    '''.format(offset=offset, limit=limit)
+
+    if verbose:
+        print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    
+    res_list = []
+    for res in results['results']['bindings']:
+        res_list.append( { #?from ?pred ?to ?fromArea ?toArea ?toParent
+                    'location': res['l']['value']  if 'l' in res else None, 
+                    'label': res['label']['value']  if 'label' in res else None, 
+                }
+            )
+    return res_list
+
+def query_labels_from_locations(sparql_endpoint, auth=None, verbose=False, offset=0, limit=1000000, max=None):
+    count = 0
+    curr_offset = offset
+    #print from here
+    
+    while(True):
+        res = iterate_query_for_labels_of_location(curr_offset, limit, sparql_endpoint, auth, verbose)
+        res_count = len(res)
+        if res_count > 0:
+            for curr in res:
+                if curr != None:
+                    print('{location}\t{label}'.format(location=curr['location'], label=curr['label'])) 
+                    count = count + 1
+            curr_offset = curr_offset + res_count
+        else:
+            break
+
+        if max != None and count > max:
+            break
+
+        
+            
+
+
+
+    
+    
+    
