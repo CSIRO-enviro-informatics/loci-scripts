@@ -687,15 +687,21 @@ def iterate_query_for_labels_of_location(offset, limit, sparql_endpoint, auth=No
             }}
             UNION
             {{
+                ?l ?childCodeProp ?label .
+                ?childCodeProp rdfs:subPropertyOf asgs:code
+            }}
+            UNION
+            {{
+                ?l ?childLabelProp ?label .
+                ?childLabelProp rdfs:subPropertyOf asgs:label
+            }}            
+            UNION
+            {{
                 ?l asgs:stateName2016 ?label
             }}
             UNION
             {{
                 ?l rdfs:label ?label
-            }}
-            UNION
-            {{
-                ?l ?childProp ?label
             }}
             UNION
             {{
