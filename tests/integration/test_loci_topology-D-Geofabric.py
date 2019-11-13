@@ -85,6 +85,8 @@ def test_loci_topology(testinput):
         #print(matches)
 
         if len(matches) != len(expecteddata):
+            missing_features = len(expecteddata)- len(matches) 
+            print("Does not match! Missing num features = " + str(missing_features)) 
             eval_diff_and_save_to_file(testinput['testcase'], expecteddata, matches)
 
 
@@ -112,12 +114,14 @@ def eval_diff_and_save_to_file(testcase_id, expected_csv_list, matches_sparql_li
     # things in expected not in matches
     diff2 = sorted(list(set(expected_hydroid_list) - set(matches_hydroid_list)))
 
-    with open('./loci-testdata/test-case-d/Testoutput-' + testcase_id + '.csv', 'w', newline='') as csvfile:
+    fname = './loci-testdata/test-case-d/Testoutput-' + testcase_id + '.csv'
+    print("Output to file: " + fname)
+    with open(fname, 'w', newline='') as csvfile:
         fieldnames = ['hydroid', 'source']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         for x in diff:
-            writer.writerow({'hydroid': x, 'source': 'cache_matches'})
+            writer.writerow({'hydroid': x, 'source': 'matches_in_cache_not_in_testdata'})
         for y in diff2:
-            writer.writerow({'hydroid': y, 'source': 'expected_testdata'})
+            writer.writerow({'hydroid': y, 'source': 'expected_hydroid_in_testdata_but_is_missing_in_cache'})
