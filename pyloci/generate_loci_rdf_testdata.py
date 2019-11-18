@@ -169,10 +169,10 @@ WHERE {{
 
 
 def get_triples():
-   # g1 = fetch_linked_data_ttl_from_source()
+    g1 = fetch_linked_data_ttl_from_source()
     g2 = fetch_linksets_from_cache()
     
-    #g1.serialize(destination="test_dataset.ttl", format='turtle')
+    g1.serialize(destination="test_dataset.ttl", format='turtle')
     g2.serialize(destination="test_linkset.ttl", format='turtle')
     
 
