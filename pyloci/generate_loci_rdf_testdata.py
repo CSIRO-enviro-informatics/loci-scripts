@@ -76,7 +76,7 @@ PREFIX loci: <http://linked.data.gov.au/def/loci#>
 PREFIX o: <http://www.w3.org/1999/02/22-rdf-syntax-ns#object>
 PREFIX p: <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate>
 PREFIX s: <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject>
-SELECT ?stmt ?to ?from ?pred ?linksetInstance 
+SELECT ?stmt ?to ?from ?pred ?linksetInstance ?stmt_pred ?stmt_value
 WHERE {{
     ?stmt dct:isPartOf ?linksetInstance .
     ?linksetInstance a loci:Linkset .
@@ -84,7 +84,10 @@ WHERE {{
     ?stmt p: ?pred .
     ?stmt s: ?from  .
     ?stmt ?x ?y
-    FILTER(?from = <{current_uri}>)
+    FILTER(?from = <{current_uri}>) 
+    OPTIONAL {{
+            ?stmt ?stmt_pred ?stmt_value
+    }}
 }}
     """.format(current_uri=current_uri)
     sparql = SPARQLWrapper2(SPARQL_ENDPOINT)
@@ -94,7 +97,14 @@ WHERE {{
         stmt = result["stmt"]
         from_uri = result["from"]
         to_uri = result["to"]
-        pred= result["pred"]
+        pred = result["pred"]
+        stmt_pred = None
+        if "stmt_pred" in result:
+            stmt_pred = result["stmt_pred"]
+        stmt_value = None
+        if "stmt_value" in result:
+            stmt_value = result["stmt_value"]
+        
         linksetInstance = result["linksetInstance"]
 
         partOf = URIRef("http://purl.org/dc/terms/isPartOf")
@@ -116,7 +126,17 @@ WHERE {{
         g.add( (stmt_node, partOf, linkset_node) )
         g.add( (linkset_node, RDF.type, URIRef("http://linked.data.gov.au/def/loci#Linkset")) )
 
+        stmt_value_node = None
+        if(stmt_value != None and stmt_value.type == 'literal'):
+            stmt_value_node = Literal(stmt_value.value, datatype=stmt_value.datatype)
+        if(stmt_value != None and stmt_value.type == 'uri'):
+            stmt_value_node = URIRef(stmt_value.value)
+
+        if(stmt_value_node != None and stmt_pred != None):
+            g.add( (stmt_node, URIRef(stmt_pred.value), stmt_value_node) )
+
     return g
+
 
 def query_cache_for_linkset_reverse(current_uri, g):
     query = """
