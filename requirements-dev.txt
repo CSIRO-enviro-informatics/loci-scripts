@@ -1,6 +1,9 @@
+#pyldapi-client
 pytest
 xlsxwriter
 SPARQLWrapper
 rdflib
 python-dotenv
 requests
+boto3
+awscli
