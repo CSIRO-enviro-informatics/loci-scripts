@@ -1,10 +1,10 @@
-from setuptools import setup
+import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setup(name='pyloci',
-      version='0.1.1.14',
+setuptools.setup(name='pyloci',
+      version='0.1.1.16',
       description='Python library for Loc-I',
       url='https://locationindex.org/',
       author='Location Index',
@@ -25,6 +25,6 @@ setup(name='pyloci',
          'python-dotenv<=0.11.0',
          'requests<=2.23.0'
       ],
-      packages=['pyloci'],
+      packages=setuptools.find_packages(),
       python_requires='>=3.6',
       zip_safe=False)
