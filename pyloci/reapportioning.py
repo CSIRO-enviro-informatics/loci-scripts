@@ -7,8 +7,7 @@ import re
 import csv
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
-
-from pyloci.sparql import util
+from .sparql.util import *
 
 GRAPHDB_USER = os.getenv("GRAPHDB_USER")
 GRAPHDB_PASSWORD = os.getenv("GRAPHDB_PASSWORD")
@@ -17,7 +16,7 @@ SPARQL_ENDPOINT =  os.getenv("SPARQL_ENDPOINT")
 
 def run_query(curr, sparql_endpoint, auth):
     print("Querying contained areas for " + curr)
-    res = util.query_mb16cc_contains(curr, sparql_endpoint, auth=auth)
+    res = query_mb16cc_contains(curr, sparql_endpoint, auth=auth)
     sum = 0.0
     fromArea = 0.0
     for d in res:
@@ -110,7 +109,7 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
         region_data_col_value = col2[1]   
 
         #query matches
-        res_list = util.query_mb16cc_contains_or_within(region_uri, SPARQL_ENDPOINT, auth, verbose=verbose_mode)
+        res_list = query_mb16cc_contains_or_within(region_uri, SPARQL_ENDPOINT, auth, verbose=verbose_mode)
         if verbose_mode: 
             print('No. matches: {}'.format(len(res_list)))
 
