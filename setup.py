@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='pyloci',
-      version='0.1.1.16',
+      version='0.1.1',
       description='Python library for Loc-I',
       url='https://locationindex.org/',
       author='Location Index',
