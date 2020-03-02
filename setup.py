@@ -26,5 +26,5 @@ setuptools.setup(name='pyloci',
          'requests<=2.23.0'
       ],
       packages=setuptools.find_packages(),
-      python_requires='>=3.6',
+      python_requires='>=3.4',
       zip_safe=False)
