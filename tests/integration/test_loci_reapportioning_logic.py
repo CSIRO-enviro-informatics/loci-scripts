@@ -29,7 +29,8 @@ def test_loci_spot_test_intersect_area(gfcc, mb, areaM2):
 
     res_list = util.query_intersecting_region_mb16cc(gfcc, mb, SPARQL_ENDPOINT, auth=auth)
 
-    assert len(res_list) == 1 and 'intersectingArea' in res_list[0] and res_list[0]['intersectingArea'] == areaM2
+    # round to 2 dec places
+    assert len(res_list) == 1 and 'intersectingArea' in res_list[0] and float("{0:.2f}".format(float(res_list[0]['intersectingArea']))) == float("{0:.2f}".format(float(areaM2)))
 
 
 def get_verification_contains_data():
