@@ -7,8 +7,7 @@ import re
 import csv
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
-
-from pyloci.sparql import util
+from .sparql import util
 
 GRAPHDB_USER = os.getenv("GRAPHDB_USER")
 GRAPHDB_PASSWORD = os.getenv("GRAPHDB_PASSWORD")
