@@ -67,10 +67,13 @@ def normalise_matches(inputmatch_list):
             data['is_intersection_area'] = True
         data_list.append(data)
 
-        print(match['pred'])
+        #print(match['pred'])
         #if data['fromArea'] < data['toArea']:
         if match['pred'] == 'http://www.opengis.net/ont/geosparql#sfContains':
-            data['proportion'] = float(data['toArea']) / float(data['fromArea'])
+            data['proportion'] = None
+            if ((data['toArea'] != None) and (data['fromArea'] != None)):
+               data['proportion'] = float(data['toArea']) / float(data['fromArea'])
+            
         elif match['pred'] == 'http://www.opengis.net/ont/geosparql#sfWithin':
             data['proportion'] = 1 #don't scale the amount as this thing is wholely in another thing
         else:
@@ -119,7 +122,9 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
         for match in normalised:
             if verbose_mode: 
                 print(json.dumps(match, indent=4))
-            reapportion_value = match['proportion'] * float(region_data_col_value)
+            reapportion_value = 'unknown'
+            if match['proportion'] != None:
+               reapportion_value = match['proportion'] * float(region_data_col_value)
 
             if not(match['is_intersection_area']) and match['to'] != None:
                 actual_target_uri = match['to']
@@ -135,19 +140,23 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
             f.write(header + "\n")
 
             for row in reapportioned:
-                line = '{},{},{},{:<10f}'.format(
-                    row[0], row[1], row[2], row[3]
-                )
-                f.write(line)
-                f.write("\n")
+               if type(row[3]) == 'float':
+                  fstr = '{},{},{},{:<10f}'
+               else:
+                  fstr = '{},{},{},{}'
+               line = fstr.format(row[0], row[1], row[2], row[3])
+               f.write(line)
+               f.write("\n")
     else:
         print(header)
         for row in reapportioned:
-            line = '{},{},{},{:<10f}'.format(
-                row[0], row[1], row[2], row[3]
-            )
+            if type(row[3]) == 'float':
+               fstr = '{},{},{},{:<10f}'
+            else:
+               fstr = '{},{},{},{}'
+            line = fstr.format(row[0], row[1], row[2], row[3])
             print(line)
-
+    return reapportioned
 
 
 
