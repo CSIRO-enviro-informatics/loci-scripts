@@ -78,7 +78,8 @@ def test_loci_topology(testinput):
         test_instance_uri = "<" + p + inputObj[1] + ">"
     
         expecteddata = get_csvdata('./loci-testdata/test-case-d/Test-' + testinput['testcase'] + '.csv', delim=",")
-        #print(expecteddata)
+        print(test_instance_uri)
+        print(expecteddata)
     
         #run sparql query to get the sfContains of the test_instance_uri obj
         matches = run_query(test_instance_uri, t)
