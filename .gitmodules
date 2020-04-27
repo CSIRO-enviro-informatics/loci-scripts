@@ -1,3 +1,4 @@
 [submodule "loci-testdata"]
 	path = loci-testdata
 	url = https://github.com/CSIRO-enviro-informatics/loci-testdata.git
+	branch = master
