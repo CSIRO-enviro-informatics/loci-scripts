@@ -69,7 +69,9 @@ def test_loci_topology(testinput):
     #print(inputObj)
     target_region_type = testinput['target_region_type']
 
-    p = uriPrefixes['asgs2016'][inputObj[0]] if inputObj[0] in uriPrefixes['asgs2016'] else None
+    featureTypeShortName = inputObj[0]
+
+    p = uriPrefixes['asgs2016'][featureTypeShortName] if featureTypeShortName in uriPrefixes['asgs2016'] else None
     t = typeIdx[target_region_type] if target_region_type in typeIdx else None
     #print(p)
     #print(t)
@@ -78,12 +80,14 @@ def test_loci_topology(testinput):
         test_instance_uri = "<" + p + inputObj[1] + ">"
     
         expecteddata = get_csvdata('./loci-testdata/test-case-d/Test-' + testinput['testcase'] + '.csv', delim=",")
-        print(test_instance_uri)
-        print(expecteddata)
+        #print(test_instance_uri)
+        #print(expecteddata)
     
         #run sparql query to get the sfContains of the test_instance_uri obj
         matches = run_query(test_instance_uri, t)
         #print(matches)
+        if len(matches) != len(expecteddata):
+            eval_diff_and_save_to_file(testinput['testcase'], expecteddata, matches, target_region_type)
 
         #run matches against expecteddata
         assert len(matches) == len(expecteddata)
@@ -92,3 +96,35 @@ def test_loci_topology(testinput):
     #read expected data from file based on id
     assert True
 
+
+def eval_diff_and_save_to_file(testcase_id, expected_csv_list, matches_sparql_list, featureTypeShortName):
+    #get list of ids from expected_csv_list
+    expected_id_list = []
+    matches_id_list = []
+    #print(expected_csv_list)
+    colName = featureTypeShortName.upper() + "_CODE16"
+    if featureTypeShortName == 'sa1':
+        colName = featureTypeShortName.upper() + "_MAIN16"
+
+    print(colName)
+    for item in expected_csv_list:
+        expected_id_list.append(item[colName])
+
+    for item in matches_sparql_list:
+        m_id = item.rsplit('/', 1)[-1]
+        matches_id_list.append(m_id)
+
+    # things in matches not in expected
+    diff = sorted(list(set(matches_id_list) - set(expected_id_list)))
+    # things in expected not in matches
+    diff2 = sorted(list(set(expected_id_list) - set(matches_id_list)))
+
+    with open('./loci-testdata/test-case-d/Testoutput-' + testcase_id + '.csv', 'w', newline='') as csvfile:
+        fieldnames = ['id', 'source']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for x in diff:
+            writer.writerow({'id': x, 'source': 'cache_matches'})
+        for y in diff2:
+            writer.writerow({'id': y, 'source': 'expected_testdata'})
