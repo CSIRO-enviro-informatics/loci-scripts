@@ -69,6 +69,11 @@ $ python -m pyloci.sparql.generate_loci_reapportioning_testdata > ./loci-testdat
 # Create loci mb16cc relations test data - query mb and cc relationships (without specifying the predicate) - currently broken :(
 $ python -m pyloci.sparql.generate_loci_mb16cc_relations_testdata > ./loci-testdata/test_case_mb16cc_relations_result.json
 
+# query labels
+$ python -m pyloci.sparql.query_loci_location_labels --limit 100 --max 100 > location_labels.tsv
+
+# generate loci test LD dataset
+$ python -m pyloci.generate_loci_rdf_testdata
 
 ```
 
