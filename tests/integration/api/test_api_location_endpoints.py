@@ -10,12 +10,16 @@ LOCI_INTEGRATION_API = os.getenv("LOCI_INTEGRATION_API")
 ADDRESS_TYPE = "http://linked.data.gov.au/def/gnaf#Address"
 MB_TYPE = "http://linked.data.gov.au/def/asgs#MeshBlock"
 CC_TYPE = "http://linked.data.gov.au/def/geofabric#ContractedCatchment"
+LGA_TYPE = "http://linked.data.gov.au/def/asgs#LocalGovernmentArea"
+SA1_TYPE = "http://linked.data.gov.au/def/asgs#StatisticalAreaLevel1"
+
 
 PREFIXES = {
     "sa1" : "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel1/",
     "sa2" : "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel2/",
     "sa3" : "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel3/",
-    "sa4" : "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel4/"
+    "sa4" : "http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel4/",
+    "lga" : "http://linked.data.gov.au/dataset/asgs2016/localgovernmentarea/"
 }
 
 TEST_DATA = [
@@ -57,6 +61,9 @@ TEST_DATA = [
     }
 ]
 
+
+TEST_LIST_LGA_TO_SA1 = [ "11800" , "24970", "29399", "31000" ]
+
 def query_api_location(fromFeature, toFeatureType, api_endpoint, api_modifier='overlaps', crosswalk='false'):
     '''
     '''
@@ -72,6 +79,9 @@ def query_api_location(fromFeature, toFeatureType, api_endpoint, api_modifier='o
         "count" : 1000,
         "offset" : 0
     }
+
+
+    print(payload)
 
     url = api_endpoint + "/location/" + api_modifier
     r = requests.get(url, params=payload)
@@ -106,6 +116,30 @@ def test_api_location_contains_sa1_mb(item):
     print(item['fromFeature'])
     data = query_api_location(item['fromFeature'], item['toFeatureType'], api_endpoint, api_modifier='contains', crosswalk='false')
     assert (sorted(item['contains']) == sorted(data['locations']))
+
+@pytest.mark.parametrize("lga_id", TEST_LIST_LGA_TO_SA1)
+def test_api_location_contains_sa1_mb_same_base_walk(lga_id):
+    api_endpoint = LOCI_INTEGRATION_API
+
+    #data = query_api_location(item['fromFeature'], item['toFeatureType'], api_endpoint, api_modifier='overlaps', crosswalk='false')
+    #print(data)
+
+    fromFeature = PREFIXES['lga'] + lga_id
+    toFeatureType = SA1_TYPE
+
+    expecteddata = get_csvdata('./loci-testdata/test-case-intra-dataset-overlaps/asgs16_lga_to_sa1-' + lga_id + '.csv', delim=",")
+    print("Expected data length: {}".format(len(expecteddata)))
+    data = query_api_location(fromFeature, toFeatureType, api_endpoint, api_modifier='overlaps', crosswalk='true')
+    
+    print(data)
+
+    assert len(data) > 0
+
+    assert len(data['overlaps']) == len(expecteddata)
+
+    #list_contains = []
+
+    #assert (sorted(item['contains']) == sorted(data['locations']))
 
 def main():
     api_endpoint = LOCI_INTEGRATION_API
