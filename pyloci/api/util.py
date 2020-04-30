@@ -80,7 +80,7 @@ class Util:
         }
         #print(payload)
         url = api_endpoint + "/location/overlaps"
-        r = requests.get(url, params=payload)
+        r = requests.get(url, params=payload, timeout=None)
         j = r.json()
         return j
 
@@ -93,6 +93,6 @@ class Util:
         }
 
         url = api_endpoint + "/location/contains"
-        r = requests.get(url, params=payload)
+        r = requests.get(url, params=payload, timeout=None)
         j = r.json()
         return j

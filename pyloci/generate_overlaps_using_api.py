@@ -59,9 +59,15 @@ def query_target_features(source_feature_uri, target_feature_type_shortlabel, ta
     return 
 
 
-def main(source_feature_type_shortlabel, target_feature_type_shortlabel, source_dataset=None, target_dataset_uri=None, num_source_features=1000000):
-    source_list = query_list_of_source_feature_type(source_feature_type_shortlabel, max=num_source_features)
+def main(source_feature_type_shortlabel, target_feature_type_shortlabel, source_dataset=None, target_dataset_uri=None, num_source_features=1000000, single_source_uri=None):
     target_dict = {}
+
+    if single_source_uri != None:
+        print("Querying source {}...".format(single_source_uri))
+        query_target_features(single_source_uri, target_feature_type_shortlabel, target_dataset_uri)
+        return
+
+    source_list = query_list_of_source_feature_type(source_feature_type_shortlabel, max=num_source_features)
     num_sources = len(source_list)
     i = 0
     for s in source_list:
@@ -69,6 +75,7 @@ def main(source_feature_type_shortlabel, target_feature_type_shortlabel, source_
         #store counts for now    
         print("Querying source {} of {}...".format(i, num_sources))
         query_target_features(s, target_feature_type_shortlabel, target_dataset_uri)
+    return
         
 import sys, argparse
 if __name__ == "__main__":
@@ -76,6 +83,7 @@ if __name__ == "__main__":
     parser.add_argument('source_feature_type_shortlabel', help='Shortlabel for the source featuretype like \'sa1\'.')
     parser.add_argument('target_feature_type_shortlabel', help='Shortlabel for the target featuretype like \'mb\'.')
     parser.add_argument('--source-dataset-uri', dest='source_dataset', help='Source dataset URI')
+    parser.add_argument('--single-source-instance-uri', dest='single_source_uri', help='Run for a single source dataset instance URI')
     parser.add_argument('--target-dataset-uri', dest='target_dataset',help='Target dataset URI')
     parser.add_argument('--num-source-features', dest='num_source_features',help='Max number of source features')
 
@@ -90,5 +98,8 @@ if __name__ == "__main__":
     num_source_features = 1000000
     if args.num_source_features:
         num_source_features = args.num_source_features
+    single_source_uri = None
+    if args.single_source_uri:
+        single_source_uri = args.single_source_uri
 
-    main(args.source_feature_type_shortlabel, args.target_feature_type_shortlabel, source_dataset, target_dataset, num_source_features)
+    main(args.source_feature_type_shortlabel, args.target_feature_type_shortlabel, source_dataset, target_dataset, num_source_features, single_source_uri)
