@@ -2,6 +2,84 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from functools import reduce
 import re
 
+
+
+def list_type_instances_by_uristring(loci_type, loci_instance_prefix, sparql_endpoint, limit=100, offset=0, auth=None):
+    '''
+        Lists 
+        auth = expects a dict with 'user' and 'password' as keys with values,
+              e.g. { 'user': 'username', 'password': 'passwordhere' }
+    '''
+    sparql = SPARQLWrapper(sparql_endpoint)
+
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
+    query = '''
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX loci: <http://linked.data.gov.au/def/loci#>
+        PREFIX hyf: <https://www.opengis.net/def/appschema/hy_features/hyf/>
+        PREFIX dcat: <http://www.w3.org/ns/dcat#>
+        select ?loci_instance
+        where {{
+            ?loci_instance a <{definedtype}> .
+            FILTER( regex (str(?loci_instance), "^{loci_instance_prefix}"))
+
+        }}
+        ORDER BY (?loci_instance)
+        LIMIT {limit}
+        OFFSET {offset}
+    '''.format(definedtype=loci_type, loci_instance_prefix=loci_instance_prefix, limit=limit, offset=offset)
+    #print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    #print(results)
+    reslist = []
+    for res in results["results"]["bindings"]:
+        val = res['loci_instance']['value']
+        if(val != None):
+            reslist.append(val)
+    #print(loci_type + ", " + count)
+    return reslist
+
+def list_type_instances(loci_type, sparql_endpoint, limit=100, offset=0, auth=None):
+    '''
+        Lists 
+        auth = expects a dict with 'user' and 'password' as keys with values,
+              e.g. { 'user': 'username', 'password': 'passwordhere' }
+    '''
+    sparql = SPARQLWrapper(sparql_endpoint)
+
+    if auth !=  None:
+        sparql.setCredentials(user=auth['user'], passwd=auth['password'])
+
+    query = '''
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX loci: <http://linked.data.gov.au/def/loci#>
+        PREFIX hyf: <https://www.opengis.net/def/appschema/hy_features/hyf/>
+        PREFIX dcat: <http://www.w3.org/ns/dcat#>
+        select ?loci_instance
+        where {{
+            ?loci_instance a <{definedtype}>
+        }}
+        ORDER BY (?loci_instance)
+        LIMIT {limit}
+        OFFSET {offset}
+    '''.format(definedtype=loci_type, limit=limit, offset=offset)
+    #print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    #print(results)
+    reslist = []
+    for res in results["results"]["bindings"]:
+        val = res['loci_instance']['value']
+        if(val != None):
+            reslist.append(val)
+    #print(loci_type + ", " + count)
+    return reslist
+
 def query_type(loci_type, sparql_endpoint, auth=None):
     '''
         auth = expects a dict with 'user' and 'password' as keys with values,
@@ -73,13 +151,13 @@ def query_sfWithin_mb_or_cc(locationUri, sparql_endpoint, auth=None):
             OPTIONAL {{
                 ?mb geox:hasAreaM2 [ 
                         data:value ?mbArea ;
-                        qb4st:crs epsg:3577
+                        geox:inCRS epsg:3577
                     ] .
             }}
             OPTIONAL {{
                 ?cc geox:hasAreaM2 [ 
                     data:value ?ccArea ;
-                    qb4st:crs epsg:3577
+                    geox:inCRS epsg:3577
                 ] .                
             }}
             {filterStmt}
@@ -343,7 +421,6 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None, verbose=True):
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX data: <http://linked.data.gov.au/def/datatype/>
-        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -356,13 +433,13 @@ def query_mb16cc_contains(regionUri, sparql_endpoint, auth=None, verbose=True):
             OPTIONAL {{
                 ?from geox:hasAreaM2 [
                     data:value ?fromAreaDataset ;
-                    qb4st:crs epsg:3577
+                    geox:inCRS epsg:3577
                 ] .               
             }}
             OPTIONAL {{
                 ?to geox:hasAreaM2 [
                     data:value ?toAreaLinkset ;
-                    qb4st:crs epsg:3577;
+                    geox:inCRS epsg:3577;
                 ] .     
             }}
             OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
@@ -406,7 +483,6 @@ def query_parent(uri, sparql_endpoint, auth=None, verbose=False):
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX data: <http://linked.data.gov.au/def/datatype/>
-        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -443,7 +519,6 @@ def query_rdftype(uri, sparql_endpoint, auth=None, verbose=False):
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX data: <http://linked.data.gov.au/def/datatype/>
-        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -476,7 +551,6 @@ def query_mb16cc_contains_or_within(regionUri, sparql_endpoint, auth=None, verbo
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX data: <http://linked.data.gov.au/def/datatype/>
-        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -489,13 +563,13 @@ def query_mb16cc_contains_or_within(regionUri, sparql_endpoint, auth=None, verbo
             OPTIONAL {{
                 ?from geox:hasAreaM2 [
                     data:value ?fromAreaLinkset ;
-                    qb4st:crs epsg:3577
+                    geox:inCRS epsg:3577
                 ] .               
             }}
             OPTIONAL {{
                 ?to geox:hasAreaM2 [
                     data:value ?toAreaLinkset ;
-                    qb4st:crs epsg:3577;
+                    geox:inCRS epsg:3577;
                 ] .     
             }}
             OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
@@ -552,7 +626,6 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX geox: <http://linked.data.gov.au/def/geox#>
         PREFIX data: <http://linked.data.gov.au/def/datatype/>
-        PREFIX qb4st: <http://www.w3.org/ns/qb4st/>
         PREFIX epsg: <http://www.opengis.net/def/crs/EPSG/0/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -565,13 +638,13 @@ def query_mb16cc_relation(regionUri, sparql_endpoint, relationship="geo:sfContai
             OPTIONAL {{
                 ?from geox:hasAreaM2 [
                     data:value ?fromAreaLinkset ;
-                    qb4st:crs epsg:3577
+                    geox:inCRS epsg:3577
                 ] .               
             }}
             OPTIONAL {{
                 ?to geox:hasAreaM2 [
                     data:value ?toAreaLinkset ;
-                    qb4st:crs epsg:3577;
+                    geox:inCRS epsg:3577;
                 ] .     
             }}
             OPTIONAL {{ FILTER ((!sameTerm(?toParent,?from)) && (!sameTerm(?toParent,?to)))
