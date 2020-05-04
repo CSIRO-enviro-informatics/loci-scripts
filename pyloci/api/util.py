@@ -7,6 +7,7 @@ class Util:
     DATATYPES_IDX_BY_SHORTLABEL = {}
     DATATYPES_IDX_BY_PREFIX = {}
     DATATYPES_IDX_BY_URI = {}
+    DATATYPES_IDX_BY_DATASET = {}
     DATATYPES_BASE = []
     DATATYPES_BASE_IDX_BY_DATASET_URI = {}
     DATATYPES_BASE_IDX_BY_DATASET_PREFIX = {}
@@ -24,6 +25,11 @@ class Util:
                     self.DATATYPES_IDX_BY_PREFIX[item['prefix']] = item
                     # map shortlabel _to_ datatype
                     self.DATATYPES_IDX_BY_SHORTLABEL_DEFAULT[item['shortlabel']] = item
+
+                    if item['datasetUri'] not in self.DATATYPES_IDX_BY_DATASET:
+                        self.DATATYPES_IDX_BY_DATASET[item['datasetUri']] = { item['uri'] :  item['shortlabel'] }
+                    else:
+                        self.DATATYPES_IDX_BY_DATASET[item['datasetUri']][item['uri']] = item['shortlabel']
 
                     if item['datasetUri'] not in self.DATATYPES_IDX_BY_SHORTLABEL:
                         self.DATATYPES_IDX_BY_SHORTLABEL[item['datasetUri']] = { item['shortlabel'] :  item }
@@ -63,6 +69,12 @@ class Util:
             return self.DATATYPES_IDX_BY_SHORTLABEL[dataset_uri][shortlabel]['uri']
         return self.DATATYPES_IDX_BY_SHORTLABEL_DEFAULT[shortlabel]['uri']
         
+    def get_datatype_uris(self, dataset_uri=None):
+        if dataset_uri != None:
+            dict_datatypes = self.DATATYPES_IDX_BY_DATASET[dataset_uri]
+            #return list(dict_datatypes.values())
+            return self.DATATYPES_IDX_BY_DATASET[dataset_uri]
+        return self.DATATYPES_IDX_BY_DATASET
 
     def query_api_location_overlaps(self, fromFeature, toFeatureType, api_endpoint, crosswalk='false'):
         '''
