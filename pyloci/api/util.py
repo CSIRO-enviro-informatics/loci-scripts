@@ -79,6 +79,10 @@ class Util:
     def query_api_location_overlaps(self, fromFeature, toFeatureType, api_endpoint, crosswalk='false'):
         '''
         '''    
+        if(crosswalk == True):
+           crosswalk = 'true'
+        if(crosswalk == False):
+           crosswalk = 'false'
         payload = {
             "uri": fromFeature,
             "areas" : "true",
