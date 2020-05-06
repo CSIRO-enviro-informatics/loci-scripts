@@ -31,6 +31,12 @@
 #    --single-source-instance-uri http://linked.data.gov.au/dataset/asgs2016/remotenessarea/44
 
 
+python -m pyloci.generate_overlaps_using_api sa1 addr \
+    --source-dataset-uri http://linked.data.gov.au/dataset/asgs2016 \
+    --output Test-D-X-1.json \
+    --single-source-instance-uri http://linked.data.gov.au/dataset/asgs2016/statisticalarealevel1/80105105310
+
+
 #python -m pyloci.generate_overlaps_using_api ra cc \
 #    --output Test-D-X-2 \
 #    --single-source-instance-uri http://linked.data.gov.au/dataset/asgs2016/remotenessarea/44
