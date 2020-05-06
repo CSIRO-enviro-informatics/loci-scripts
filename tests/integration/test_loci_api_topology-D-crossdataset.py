@@ -66,9 +66,10 @@ def test_loci_topology(testinput):
                 assert matches['code'] != 500
 
             list_of_matching_uris = list(map(lambda x : x['uri'], matches['overlaps']))
+            list_of_expecting_uris = list(map(lambda x : x['uri'], expecteddata['overlaps']))
             #print(list_of_matching_uris)
             #print(matches)
-            assert match_expected_data_with_matches(testinput['testcase'], expecteddata['contains'], list_of_matching_uris, t)
+            assert match_expected_data_with_matches(testinput['testcase'], list_of_expecting_uris, list_of_matching_uris, t)
     else:
         assert False
 
