@@ -1,6 +1,3 @@
-#largecache/smallcache
-#SPARQL_ENDPOINT=http://db.loci.cat/repositories/smallcache
-#SPARQL_ENDPOINT=http://db.loci.cat/repositories/largecache
 #prototype instance
 SPARQL_ENDPOINT=http://db.loci.cat/repositories/loci-cache
 EXCELERATOR_URL=http://excelerator.loci.cat
@@ -8,3 +5,4 @@ S3_BUCKET=http://loci-assets.s3-website-ap-southeast-2.amazonaws.com/source-data
 #uncomment the following if auth needed
 #GRAPHDB_USER=ro
 #GRAPHDB_PASSWORD=changeme
+LOCI_INTEGRATION_API=https://api.loci.cat/api/v1
