@@ -41,12 +41,14 @@ def read_data_from_input_csv(csvfile):
 
 
 def print_row(orderedDictRow):
+    field1 = None
+    field2 = None
     if type(orderedDictRow) is OrderedDict:
         field1 = orderedDictRow.popitem(last=False) 
         field2 = orderedDictRow.popitem(last=False) 
     else: #assume dict
         field2 = orderedDictRow.popitem() 
-        field2 = orderedDictRow.popitem() 
+        field1 = orderedDictRow.popitem() 
         
     line = '{:>15} {:<20}\n{:>15} {:<20}\n'.format(
         field1[0], field1[1],
