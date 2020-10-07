@@ -40,6 +40,7 @@ def read_data_from_input_csv(csvfile):
 
 
 def print_row(orderedDictRow):
+    print(type(orderedDictRow))
     field1 = orderedDictRow.popitem(last=False) 
     field2 = orderedDictRow.popitem(last=False) 
         
