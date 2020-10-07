@@ -31,7 +31,6 @@ def read_data_from_input_csv(csvfile):
     '''Read data from csv into rows 
     '''
     csvdata = []
-    print(csvfile)
     with open(csvfile, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
