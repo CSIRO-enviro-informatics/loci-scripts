@@ -41,8 +41,9 @@ def read_data_from_input_csv(csvfile):
 
 def print_row(orderedDictRow):
     print(type(orderedDictRow))
-    field1 = orderedDictRow.popitem(last=False) 
-    field2 = orderedDictRow.popitem(last=False) 
+    field2 = orderedDictRow.popitem()
+    field1 = orderedDictRow.popitem() 
+     
         
     line = '{:>15} {:<20}\n{:>15} {:<20}\n'.format(
         field1[0], field1[1],
@@ -104,8 +105,9 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
         if verbose_mode:
             (col1, col2) = print_row(row)
         else:
-            col1 = row.popitem(last=False) 
-            col2 = row.popitem(last=False) 
+            col2 = row.popitem()
+            col1 = row.popitem() 
+             
         
         #get contains for col1 - assume this to be the uri row
         region_uri  = "<" + col1[1] + ">"
