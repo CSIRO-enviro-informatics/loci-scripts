@@ -727,6 +727,7 @@ def iterate_query_for_labels_of_location(offset, limit, sparql_endpoint, auth=No
         PREFIX asgs: <http://linked.data.gov.au/def/asgs#> 
         PREFIX gnaf: <http://linked.data.gov.au/def/gnaf#> 
         PREFIX reg: <http://purl.org/linked-data/registry#>
+        PREFIX dcterms: <http://purl.org/dc/terms/>
 
         SELECT DISTINCT ?l ?label
         WHERE {{
@@ -816,6 +817,25 @@ def iterate_query_for_labels_of_location(offset, limit, sparql_endpoint, auth=No
             {{
                 ?l  gnaf:hasName ?label
             }}
+            UNION
+            {{
+                ?l  dcterms:title  ?label
+            }}
+    		UNION
+            {{
+                ?l  dcterms:comment  ?label
+            }}
+    		UNION
+    		{{
+        		?l dcterms:identifier ?label
+		    }}
+            UNION
+    		{{
+		    	?l gnaf:hasAlias [ 
+                    a gnaf:Alias ;
+            		rdfs:label ?label
+        		]    
+    		}}
         }}
         OFFSET {offset}
         LIMIT {limit}

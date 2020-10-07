@@ -8,6 +8,7 @@ import csv
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 from .sparql import util
+from collections import OrderedDict
 
 GRAPHDB_USER = os.getenv("GRAPHDB_USER")
 GRAPHDB_PASSWORD = os.getenv("GRAPHDB_PASSWORD")
@@ -30,7 +31,6 @@ def read_data_from_input_csv(csvfile):
     '''Read data from csv into rows 
     '''
     csvdata = []
-    print(csvfile)
     with open(csvfile, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
@@ -40,8 +40,14 @@ def read_data_from_input_csv(csvfile):
 
 
 def print_row(orderedDictRow):
-    field1 = orderedDictRow.popitem(last=False) 
-    field2 = orderedDictRow.popitem(last=False) 
+    field1 = None
+    field2 = None
+    if type(orderedDictRow) is OrderedDict:
+        field1 = orderedDictRow.popitem(last=False) 
+        field2 = orderedDictRow.popitem(last=False) 
+    else: #assume dict
+        field2 = orderedDictRow.popitem() 
+        field1 = orderedDictRow.popitem() 
         
     line = '{:>15} {:<20}\n{:>15} {:<20}\n'.format(
         field1[0], field1[1],
@@ -103,8 +109,12 @@ def entrypoint(user_input_csv, verbose_mode=False, output_to_file=False, outputf
         if verbose_mode:
             (col1, col2) = print_row(row)
         else:
-            col1 = row.popitem(last=False) 
-            col2 = row.popitem(last=False) 
+            if isinstance(row, OrderedDict):
+                col1 = row.popitem(last=False) 
+                col2 = row.popitem(last=False) 
+            else:
+                col2 = row.popitem() 
+                col1 = row.popitem() 
         
         #get contains for col1 - assume this to be the uri row
         region_uri  = "<" + col1[1] + ">"
