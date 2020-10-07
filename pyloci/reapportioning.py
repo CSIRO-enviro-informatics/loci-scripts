@@ -41,7 +41,7 @@ def read_data_from_input_csv(csvfile):
 
 
 def print_row(orderedDictRow):
-    if isinstance(orderedDictRow, OrderedDict):
+    if type(orderedDictRow) is OrderedDict:
         field1 = orderedDictRow.popitem(last=False) 
         field2 = orderedDictRow.popitem(last=False) 
     else: #assume dict
